@@ -337,6 +337,22 @@ Blockly.Css.CONTENT = [
     'opacity: .8;',
   '}',
 
+  '.blocklyDebug>image {',
+    'opacity: .4;',
+  '}',
+
+  '.blocklyDebug>image:hover {',
+    'opacity: .6;',
+  '}',
+
+  '.blocklyDebug>image:active {',
+    'opacity: 1;',
+  '}',
+
+  '.blocklyDebug>image.activated {',
+    'opacity: 1;',
+  '}',
+
   /* Darken flyout scrollbars due to being on a grey background. */
   /* By contrast, workspace scrollbars are on a white background. */
   '.blocklyFlyout .blocklyScrollbarKnob {',
