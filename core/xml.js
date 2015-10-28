@@ -62,10 +62,7 @@ Blockly.Xml.workspaceToDom = function(workspace) {
 Blockly.Xml.blockToDom_ = function(block) {
   var element = goog.dom.createDom(block.isShadow() ? 'shadow' : 'block');
   element.setAttribute('type', block.type);
-  if (Blockly.Realtime.isEnabled()) {
-    // Only used by realtime.
-    element.setAttribute('id', block.id);
-  }
+  element.setAttribute('id', block.id);
   if (block.mutationToDom) {
     // Custom data for an advanced block.
     var mutation = block.mutationToDom();
@@ -350,7 +347,6 @@ Blockly.Xml.domToBlockHeadless_ =
   }
   var id = xmlBlock.getAttribute('id');
   if (opt_reuseBlock && id) {
-    // Only used by realtime.
     block = Blockly.Block.getById(id, workspace);
     // TODO: The following is for debugging.  It should never actually happen.
     if (!block) {
@@ -521,7 +517,7 @@ Blockly.Xml.domToBlockHeadless_ =
   }
   // Give the block a chance to clean up any initial inputs.
   if (block.validate) {
-    block.validate();
+    block.validate.call(block);
   }
   return block;
 };
