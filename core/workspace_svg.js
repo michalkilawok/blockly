@@ -31,6 +31,7 @@ goog.provide('Blockly.WorkspaceSvg');
 goog.require('Blockly.ScrollbarPair');
 goog.require('Blockly.Trashcan');
 goog.require('Blockly.ZoomControls');
+goog.require('Blockly.DebugSwitch');
 goog.require('Blockly.Workspace');
 goog.require('Blockly.Xml');
 
@@ -181,6 +182,9 @@ Blockly.WorkspaceSvg.prototype.createDom = function(opt_backgroundClass) {
   if (this.options.zoomOptions && this.options.zoomOptions.controls) {
     bottom = this.addZoomControls_(bottom);
   }
+  if (this.options.debugOptions && this.options.debugOptions.switch_) {
+    bottom = this.addDebugSwitch_(bottom);
+  }
   Blockly.bindEvent_(this.svgGroup_, 'mousedown', this, this.onMouseDown_);
   var thisWorkspace = this;
   Blockly.bindEvent_(this.svgGroup_, 'touchstart', null,
@@ -236,6 +240,10 @@ Blockly.WorkspaceSvg.prototype.dispose = function() {
     this.zoomControls_.dispose();
     this.zoomControls_ = null;
   }
+  if (this.debugSwitch_) {
+    this.debugSwitch_.dispose();
+    this.debugSwitch_ = null;
+  }
   if (!this.options.parentWorkspace) {
     // Top-most workspace.  Dispose of the SVG too.
     goog.dom.removeNode(this.options.svg);
@@ -254,6 +262,20 @@ Blockly.WorkspaceSvg.prototype.addTrashcan_ = function(bottom) {
   var svgTrashcan = this.trashcan.createDom();
   this.svgGroup_.insertBefore(svgTrashcan, this.svgBlockCanvas_);
   return this.trashcan.init(bottom);
+};
+
+/**
+ * Add debug switch.
+ * @param {number} bottom Distance from workspace bottom to bottom of controls.
+ * @return {number} Distance from workspace bottom to the top of controls.
+ * @private
+ */
+Blockly.WorkspaceSvg.prototype.addDebugSwitch_ = function(bottom) {
+  /** @type {Blockly.DebugSwitch} */
+  this.debugSwitch_ = new Blockly.DebugSwitch(this);
+  var svgDebugSwitch = this.debugSwitch_.createDom();
+  this.svgGroup_.appendChild(svgDebugSwitch);
+  return this.debugSwitch_.init(bottom);
 };
 
 /**
@@ -302,6 +324,9 @@ Blockly.WorkspaceSvg.prototype.resize = function() {
   }
   if (this.zoomControls_) {
     this.zoomControls_.position();
+  }
+  if (this.debugSwitch_) {
+    this.debugSwitch_.position();
   }
   if (this.scrollbar) {
     this.scrollbar.resize();
@@ -981,6 +1006,23 @@ Blockly.WorkspaceSvg.prototype.zoomReset = function(e) {
         (metrics.contentHeight - metrics.viewHeight) / 2);
   } else {
     this.translate(0, 0);
+  }
+  // This event has been handled.  Don't start a workspace drag.
+  e.stopPropagation();
+};
+
+/**
+ * Toggle debug mode
+ * @param {!Event} e Mouse down event.
+ */
+Blockly.WorkspaceSvg.prototype.switchDebug = function(e) {
+  var bugElement;
+  this.debugOn = !this.debugOn;
+  bugElement = this.debugSwitch_.svgGroup_.getElementsByTagName('image')[0];
+  if (this.debugOn) {
+    bugElement.setAttribute('class', 'activated');
+  } else {
+    bugElement.setAttribute('class', '');
   }
   // This event has been handled.  Don't start a workspace drag.
   e.stopPropagation();

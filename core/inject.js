@@ -222,6 +222,14 @@ Blockly.parseOptions_ = function(options) {
   } else {
     zoomOptions.scaleSpeed = parseFloat(zoom['scaleSpeed']);
   }
+  var debug = options['debug'] || {};
+  var debugOptions = {};
+
+  if (debug['switch_'] === undefined) {
+    debugOptions.switch_ = false;
+  } else {
+    debugOptions.switch_ = !!debug['switch_'];
+  }
 
   var enableRealtime = !!options['realtime'];
   var realtimeOptions = enableRealtime ? options['realtimeOptions'] : undefined;
@@ -242,6 +250,7 @@ Blockly.parseOptions_ = function(options) {
     languageTree: languageTree,
     gridOptions: gridOptions,
     zoomOptions: zoomOptions,
+    debugOptions: debugOptions,
     enableRealtime: enableRealtime,
     realtimeOptions: realtimeOptions
   };
